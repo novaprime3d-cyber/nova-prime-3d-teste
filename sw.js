@@ -1,5 +1,5 @@
 /* Nova Prime 3D — offline shell v1 */
-const CACHE='nova-prime-3d-pwa-v69-ios-pdf-fix';
+const CACHE='nova-prime-3d-pwa-v610-ios-pdf-layout';
 const ASSETS=['./','./index.html','./logo.png','./ios-pdf.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('nova-prime-3d-pwa-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

@@ -1,19 +1,13 @@
-NOVA PRIME 3D — iPhone v6.9 — correção de PDF
+NOVA PRIME 3D — iPhone v6.10 — layout PDF
 
 Atualize SOMENTE o repositório de testes nova-prime-3d-teste.
-Substitua todos os arquivos na raiz do repositório, inclusive index.html, ios-pdf.js e sw.js.
-Não altere o repositório oficial da família.
+Envie os arquivos deste ZIP na raiz e substitua os antigos, incluindo ios-pdf.js, index.html e sw.js.
 
-Correções:
-- preço dentro da margem direita do PDF (alinhamento à direita)
-- elimina fotos falsas (logo) e quadrados vazios quando não há foto
-- usa uma, duas ou três fotos conforme disponibilidade
-- cartão compacto quando não há nenhuma foto
-- páginas A4 com fluxo de produtos, sem capa isolada
-- 1 produto com foto recebe destaque maior; múltiplos itens organizados por página
-- mantém descrições, valores opcionais, atacado, contatos e botões compartilhar/salvar
+Alterações:
+- um único produto SEM foto vira página de destaque, com preço e informações legíveis
+- produtos SEM foto em catálogo com vários itens usam cartões baixos e fluidos
+- não reserva quadros de imagem quando não há foto no aparelho
+- mantém preço dentro da margem, catálogo A4 vertical, rodapé, atacado e compartilhamento
+- fotografias do Android ainda não sincronizam com iPhone (Firebase Storage pendente)
 
-Fotos do Android ainda não aparecem no iPhone até a futura sincronização em nuvem.
-Os dados da versão de testes continuam conectados ao Firebase real.
-
-Valide a exportação no Safari/iPhone antes de atualizar o site principal.
+O repositório principal da família não deve ser modificado ainda.
