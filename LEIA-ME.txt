@@ -1,13 +1,14 @@
-NOVA PRIME 3D — iPhone v6.10 — layout PDF
+Nova Prime 3D - iPhone v6.11 - PDF compacto
 
-Atualize SOMENTE o repositório de testes nova-prime-3d-teste.
-Envie os arquivos deste ZIP na raiz e substitua os antigos, incluindo ios-pdf.js, index.html e sw.js.
+Atualizar apenas o repositorio nova-prime-3d-teste no GitHub Pages.
+Enviar os arquivos na RAIZ do repositorio, incluindo index.html, ios-pdf.js, sw.js, logo.png, manifest.webmanifest e pasta icons.
 
-Alterações:
-- um único produto SEM foto vira página de destaque, com preço e informações legíveis
-- produtos SEM foto em catálogo com vários itens usam cartões baixos e fluidos
-- não reserva quadros de imagem quando não há foto no aparelho
-- mantém preço dentro da margem, catálogo A4 vertical, rodapé, atacado e compartilhamento
-- fotografias do Android ainda não sincronizam com iPhone (Firebase Storage pendente)
+Atualizacoes:
+- Produto sem foto: cartao compacto sem espacos internos vazios.
+- Produto com foto: uma foto grande e ate duas menores.
+- Precos e disponibilidade ficam juntos; preserva faixas de atacado.
+- Mantem formato A4, selecao, compartilhamento e salvamento de PDF.
+- Os usuarios iPhone ainda nao recebem fotos salvas localmente no Android (Firebase Storage pendente).
 
-O repositório principal da família não deve ser modificado ainda.
+A pagina A4 pode ter area em branco quando o catalogo tem somente um produto sem fotos: isso e normal e nao corresponde a quadros vazios.
+Nao substitua o site principal da familia antes de validar os testes.

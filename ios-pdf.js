@@ -62,62 +62,45 @@ function photoLayout(ctx,images,x,y,w,h){
  const gap=14,left=Math.round(w*.64),right=w-left-gap;
  rounded(images[0],x,y,left,h);rounded(images[1],x+left+gap,y,right,(h-gap)/2);rounded(images[2],x+left+gap,y+(h+gap)/2,right,(h-gap)/2);
 }
-function approximateLines(s, maxChars, maxLines) {
+function approximateLines(s,maxChars,maxLines){
  const txt=String(s||'').trim();
  return txt?Math.min(maxLines,Math.max(1,Math.ceil(txt.length/maxChars))):0;
 }
 function wholesaleLines(it){return (it.wholesale||[]).map(t=>String(t||'').replace(/\s+/g,' ').trim()).filter(Boolean)}
 function cardHeight(it,imgs,large){
- const desc=approximateLines(it.description,74,large?5:3);
- const wholesale=wholesaleLines(it).length?58:0;
- if(!imgs.length)return 182+(desc?desc*29+22:0)+wholesale;
- return (large?1085:495)+(desc?desc*29+22:0)+wholesale;
+ const nameLines=approximateLines(it.name,49,2);
+ const descriptionLines=approximateLines(it.description,75,large?5:3);
+ const wholesale=wholesaleLines(it).length?63:0;
+ const nameExtra=Math.max(0,nameLines-1)*34;
+ if(!imgs.length)return 210+nameExtra+(descriptionLines?descriptionLines*29+18:0)+wholesale;
+ return (large?975:445)+nameExtra+(descriptionLines?descriptionLines*29+18:0)+wholesale;
 }
 function card(ctx,it,y,images,large){
  const x=58,w=1074,h=cardHeight(it,images,large);
+ const withPhotos=images.length>0;
  roundRect(ctx,x,y,w,h,19,'#ffffff','#d9e7db');
- roundRect(ctx,x+24,y+24,6,48,3,'#36c94b');
- wrapText(ctx,it.name||'Produto Nova Prime 3D',x+48,y+56,w-95,36,2,'bold 31px Arial','#15291a');
- let cursor=y+93;
- if(images.length){
-  const photoHeight=large?840:300;
+ roundRect(ctx,x+24,y+22,6,48,3,'#36c94b');
+ const nameUsed=wrapText(ctx,it.name||'Produto Nova Prime 3D',x+49,y+55,w-102,35,2,'bold 31px Arial','#15291a');
+ let cursor=y+77+Math.max(0,nameUsed-35);
+ if(withPhotos){
+  cursor+=18;
+  const photoHeight=large?750:275;
   photoLayout(ctx,images,x+25,cursor,w-50,photoHeight);
-  cursor+=photoHeight+19;
+  cursor+=photoHeight+13;
  }
  const desc=String(it.description||'').trim();
- if(desc){const used=wrapText(ctx,desc,x+27,cursor+13,w-54,29,large?5:3,'23px Arial','#36513d');cursor+=Math.max(used+22,45)}
- const price=String(it.price||'').trim();
+ if(desc){const used=wrapText(ctx,desc,x+28,cursor+35,w-56,29,large?5:3,'23px Arial','#36513d');cursor+=Math.max(used+18,48)}
  const status='Disponibilidade: '+(it.status||'Consultar');
- wrapText(ctx,status,x+27,cursor+40,price?650:w-60,25,2,'21px Arial','#5d7664');
- if(price)safePrice(ctx,price,x+w-27,cursor+45,350);
- cursor+=79;
- const lines=wholesaleLines(it);
- if(lines.length)wrapText(ctx,'ATACADO  •  '+lines.join('   |   '),x+27,cursor+6,w-54,24,2,'bold 20px Arial','#23843b');
- return h;
-}
-function singleWithoutPhotos(ctx,it,config){
- const x=70,w=1050;
- // Ficha comercial sem fotos: painel de destaque, sem espaço reservado para imagens ausentes.
- roundRect(ctx,x,250,w,1120,24,'#10301c');
- roundRect(ctx,x+49,320,8,63,4,'#64f178');
- text(ctx,'PRODUTO EM DESTAQUE',x+76,360,'bold 24px Arial','#a8f4b5');
- const name=String(it.name||'Produto Nova Prime 3D');
- wrapText(ctx,name,x+53,470,w-108,76,3,'bold 61px Arial','#ffffff');
- const desc=String(it.description||'').trim();
- if(desc)wrapText(ctx,desc,x+55,700,w-110,38,4,'28px Arial','#d3e7d6');
- ctx.strokeStyle='#42644b';ctx.lineWidth=2;
- ctx.beginPath();ctx.moveTo(x+54,800);ctx.lineTo(x+w-54,800);ctx.stroke();
- text(ctx,'Disponibilidade: '+(it.status||'Consultar'),x+54,868,'26px Arial','#cbe8d0');
  const price=String(it.price||'').trim();
- if(price){
-  text(ctx,'PREÇO DE VENDA',x+54,975,'bold 23px Arial','#a8f4b5');
-  let font=94;while(font>43){ctx.font=`bold ${font}px Arial`;if(ctx.measureText(price).width<850)break;font-=3;}
-  text(ctx,price,x+53,1092,`bold ${font}px Arial`,'#72f783');
+ const statusY=cursor+61;
+ wrapText(ctx,status,x+28,statusY,price?630:w-56,25,2,'22px Arial','#5d7664');
+ if(price)safePrice(ctx,price,x+w-30,statusY+2,350);
+ const wholesale=wholesaleLines(it);
+ if(wholesale.length){
+  ctx.strokeStyle='#e2ece3';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+28,statusY+21);ctx.lineTo(x+w-28,statusY+21);ctx.stroke();
+  wrapText(ctx,'ATACADO  •  '+wholesale.join('   |   '),x+28,statusY+55,w-56,25,2,'bold 20px Arial','#23843b');
  }
- const lines=wholesaleLines(it);
- if(lines.length)wrapText(ctx,'ATACADO  •  '+lines.join('   |   '),x+54,1150,w-108,25,2,'bold 23px Arial','#d2f5d7');
- ctx.strokeStyle='#446d4d';ctx.beginPath();ctx.moveTo(x+54,1230);ctx.lineTo(x+w-54,1230);ctx.stroke();
- text(ctx,'FAÇA SEU PEDIDO COM A NOVA PRIME 3D',x+54,1293,'bold 25px Arial','#ffffff');
+ return h;
 }
 async function renderPage(entries,pageNum,totalPages,config,logo) {
  const c=document.createElement('canvas');c.width=PAGE_W;c.height=PAGE_H;
@@ -127,11 +110,7 @@ async function renderPage(entries,pageNum,totalPages,config,logo) {
  text(ctx,'NOVA PRIME 3D',181,97,'bold 43px Arial','#ffffff');
  text(ctx,'CATÁLOGO DE PRODUTOS   •   '+config.date,181,129,'21px Arial','#b9eec1');
  let y=185;
- if(entries.length===1 && entries[0].images.length===0){
-  singleWithoutPhotos(ctx,entries[0].item,config);
- } else {
-  for(const entry of entries){const ht=card(ctx,entry.item,y,entry.images,entry.large);y+=ht+19}
- }
+ for(const entry of entries){const ht=card(ctx,entry.item,y,entry.images,entry.large);y+=ht+19}
  ctx.strokeStyle='#d3e3d6';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(61,1585);ctx.lineTo(1128,1585);ctx.stroke();
  wrapText(ctx,config.contact||'Nova Prime 3D',63,1618,870,27,2,'20px Arial','#31563a');
  text(ctx,`Página ${pageNum} de ${totalPages}`,1120,1638,'18px Arial','#5c7863','right');
@@ -186,7 +165,7 @@ async function create(payload){
   current.push(entry);y+=h+gap;
  }
  if(current.length)pages.push(current);
- // Um único produto com foto ocupa mais espaço útil, sem capa vazia.
+ // Um produto com foto tem destaque; sem foto, usa cartão compacto.
  for(const page of pages){
   if(page.length===1&&page[0].images.length){page[0].large=true}
  }
