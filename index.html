@@ -297,8 +297,7 @@ async function generateCatalogPdf(){
    for(const ph of photos.slice(0,3)){
      const img=document.createElement('img');img.alt=cat.name||'Foto do produto';img.src=ph.data;pics.append(img);
    }
-   if(!photos.length){const img=document.createElement('img');img.src='logo.png';img.alt='Nova Prime 3D';pics.append(img)}
-   inner.append(pics);
+   if(photos.length)inner.append(pics);
    if(cat.description){const desc=document.createElement('p');desc.className='cp-description';desc.textContent=cat.description;inner.append(desc)}
    const lower=document.createElement('div');lower.className='cp-lower';
    const status=document.createElement('span');status.className='cp-availability';status.textContent='Disponibilidade: '+(cat.status||'Consultar');lower.append(status);
@@ -344,4 +343,4 @@ function catalogPdfExportResult(ok,message){
  $('catalogPdfExportStatus').textContent=message||(ok?'PDF pronto.':'Falha ao gerar o PDF.');
  if(!ok)alert($('catalogPdfExportStatus').textContent);
 }
-</script><div class="catalog-print" id="catalogPrint"></div><script src="./ios-pdf.js"></script><script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));</script></body></html>
+</script><div class="catalog-print" id="catalogPrint"></div><script src="./ios-pdf.js?v=69"></script><script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));</script></body></html>

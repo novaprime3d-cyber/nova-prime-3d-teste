@@ -14,68 +14,96 @@ function loadImage(src) {
     img.src = src;
   });
 }
-function fitImage(ctx, img, x, y, w, h) {
-  ctx.fillStyle = '#f2f6f3';ctx.fillRect(x,y,w,h);
-  if(!img) return;
-  const ratio = Math.min(w/img.width,h/img.height);
-  const wi = Math.max(1,img.width*ratio),hi = Math.max(1,img.height*ratio);
-  ctx.drawImage(img,x+(w-wi)/2,y+(h-hi)/2,wi,hi);
+function fitImage(ctx,img,x,y,w,h) {
+ if(!img)return;
+ const ratio=Math.min(w/img.width,h/img.height);
+ const wi=img.width*ratio,hi=img.height*ratio;
+ ctx.drawImage(img,x+(w-wi)/2,y+(h-hi)/2,wi,hi);
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke) {
-  ctx.beginPath();ctx.roundRect(x,y,w,h,r);
-  if(fill){ctx.fillStyle=fill;ctx.fill()}
-  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}
+ ctx.beginPath();ctx.roundRect(x,y,w,h,r);
+ if(fill){ctx.fillStyle=fill;ctx.fill()}
+ if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}
 }
-function text(ctx,s,x,y,font,color='#152419') {
-  ctx.fillStyle=color;ctx.font=font;ctx.fillText(String(s||''),x,y);
+function text(ctx,s,x,y,font,color='#142219',align='left') {
+ ctx.fillStyle=color;ctx.font=font;ctx.textAlign=align;
+ ctx.fillText(String(s||''),x,y);
+ ctx.textAlign='left';
 }
-function wrapText(ctx, str, x, y, maxWidth, lineHeight, maxLines, font, color='#2d4132') {
-  ctx.font=font;ctx.fillStyle=color;
-  const words=String(str||'').replace(/\s+/g,' ').trim().split(' ');
-  let line='',lines=[];
-  for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else{line=test}}
-  if(line)lines.push(line);
-  if(lines.length>maxLines){lines=lines.slice(0,maxLines);let s=lines.at(-1);while(s&&ctx.measureText(s+'…').width>maxWidth)s=s.slice(0,-1);lines[lines.length-1]=s+'…'}
-  lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));
-  return lines.length*lineHeight;
+function wrapText(ctx,str,x,y,maxWidth,lineHeight,maxLines,font,color='#2d4132') {
+ ctx.font=font;ctx.fillStyle=color;
+ const words=String(str||'').replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
+ if(!words.length)return 0;
+ let line='',lines=[];
+ for(const word of words){const trial=line?line+' '+word:word;
+  if(ctx.measureText(trial).width>maxWidth&&line){lines.push(line);line=word}else{line=trial}
+ }
+ if(line)lines.push(line);
+ if(lines.length>maxLines){lines=lines.slice(0,maxLines);let s=lines.at(-1);
+  while(s&&ctx.measureText(s+'…').width>maxWidth)s=s.slice(0,-1);
+  lines[lines.length-1]=s+'…';
+ }
+ lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));
+ return lines.length*lineHeight;
 }
-function card(ctx,p,y,idx,photoImages){
-  const x=57,w=1076,h=673;
-  roundRect(ctx,x,y,w,h,24,'#fff','#d7e7da');
-  roundRect(ctx,x+24,y+25,5,49,2,'#3fca38');
-  wrapText(ctx,p.name||'Produto Nova Prime 3D',x+50,y+59,w-80,37,2,'bold 32px Arial','#142219');
-  const py=y+91,imgh=346;
-  const pics=photoImages.length?photoImages:[null];
-  fitImage(ctx,pics[0],x+25,py,650,imgh);
-  const smw=355,smh=167;
-  fitImage(ctx,pics[1]||null,x+696,py,smw,smh);
-  fitImage(ctx,pics[2]||null,x+696,py+179,smw,smh);
-  ctx.strokeStyle='#d6e6d9';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+26,y+455);ctx.lineTo(x+w-26,y+455);ctx.stroke();
-  wrapText(ctx,p.description||'',x+26,y+485,w-52,26,3,'23px Arial','#314637');
-  text(ctx,'Disponibilidade: '+(p.status||'Consultar'),x+26,y+580,'21px Arial','#536d59');
-  if(p.price) text(ctx,currency(p.price),x+w-30,y+584,'bold 36px Arial','#207e2d');
-  const tiers=(p.wholesale||[]).slice(0,3);
-  if(tiers.length){
-    const lines=tiers.map(s=>String(s).replace(/\s+/g,' ').trim()).filter(Boolean);
-    wrapText(ctx,'ATACADO  •  '+lines.join('     |     '),x+26,y+631,w-52,23,2,'bold 19px Arial','#2f7437');
-  }
+function safePrice(ctx,price,x,y,maxWidth){
+ let size=39;
+ while(size>23){ctx.font=`bold ${size}px Arial`;if(ctx.measureText(price).width<=maxWidth)break;size-=2}
+ text(ctx,price,x,y,`bold ${size}px Arial`,'#1d882d','right');
 }
-async function renderPage(items, pageNum, totalPages, config, logo) {
-  const c=document.createElement('canvas');c.width=PAGE_W;c.height=PAGE_H;
-  const ctx=c.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,PAGE_W,PAGE_H);
-  roundRect(ctx,40,35,1110,120,18,'#0f2015');
-  if(logo)fitImage(ctx,logo,60,47,90,94);
-  text(ctx,'NOVA PRIME 3D',175,98,'bold 42px Arial','#ffffff');
-  text(ctx,'CATÁLOGO DE PRODUTOS  •  '+config.date,175,133,'20px Arial','#b1edbb');
-  for(let i=0;i<items.length;i++){
-    const it=items[i];
-    const images=await Promise.all((it.photos||[]).slice(0,3).map(loadImage));
-    card(ctx,it,i===0?185:879,i,images.filter(Boolean));
-  }
-  ctx.strokeStyle='#d4e7d5';ctx.beginPath();ctx.moveTo(55,1590);ctx.lineTo(1135,1590);ctx.stroke();
-  wrapText(ctx,config.contact||'Nova Prime 3D',60,1622,950,26,2,'19px Arial','#3d5745');
-  text(ctx,`Página ${pageNum} de ${totalPages}`,1128,1642,'18px Arial','#607864');
-  return c.toDataURL('image/jpeg',0.88).split(',')[1];
+function photoLayout(ctx,images,x,y,w,h){
+ if(!images.length)return;
+ const rounded=(img,bx,by,bw,bh)=>{
+  roundRect(ctx,bx,by,bw,bh,10,'#f3f7f3','#e1ece2');
+  ctx.save();ctx.beginPath();ctx.roundRect(bx,by,bw,bh,10);ctx.clip();fitImage(ctx,img,bx+6,by+6,bw-12,bh-12);ctx.restore();
+ };
+ if(images.length===1){rounded(images[0],x,y,w,h);return}
+ if(images.length===2){const gap=14;const pw=(w-gap)/2;rounded(images[0],x,y,pw,h);rounded(images[1],x+pw+gap,y,pw,h);return}
+ const gap=14,left=Math.round(w*.64),right=w-left-gap;
+ rounded(images[0],x,y,left,h);rounded(images[1],x+left+gap,y,right,(h-gap)/2);rounded(images[2],x+left+gap,y+(h+gap)/2,right,(h-gap)/2);
+}
+function cardHeight(it,imgs,large){
+ if(!imgs.length)return 326+(it.wholesale?.length?54:0);
+ return (large?960:638)+(it.wholesale?.length?54:0);
+}
+function card(ctx,it,y,images,large){
+ const x=58,w=1074,h=cardHeight(it,images,large);
+ roundRect(ctx,x,y,w,h,22,'#ffffff','#d9e7db');
+ roundRect(ctx,x+25,y+27,6,49,3,'#3edb52');
+ wrapText(ctx,it.name||'Produto Nova Prime 3D',x+50,y+61,w-100,37,2,'bold 32px Arial','#15291a');
+ let cursor=y+100;
+ if(images.length){
+  const photoHeight=large?610:345;
+  photoLayout(ctx,images,x+28,cursor,w-56,photoHeight);
+  cursor+=photoHeight+29;
+ }
+ const desc=String(it.description||'').trim();
+ if(desc){const lh=29;const used=wrapText(ctx,desc,x+30,cursor+8,w-60,lh,large?5:3,'24px Arial','#36513d');cursor+=Math.max(used+19,45)}
+ const price=String(it.price||'').trim();
+ const status='Disponibilidade: '+(it.status||'Consultar');
+ const priceSpace=price?290:0;
+ wrapText(ctx,status,x+30,cursor+38,w-66-priceSpace,25,2,'21px Arial','#5d7664');
+ if(price)safePrice(ctx,price,x+w-30,cursor+43,Math.min(360,w*.4));
+ cursor+=78;
+ const lines=(it.wholesale||[]).map(t=>String(t||'').replace(/\s+/g,' ').trim()).filter(Boolean);
+ if(lines.length){
+  wrapText(ctx,'ATACADO  •  '+lines.join('   |   '),x+30,cursor+15,w-60,24,2,'bold 21px Arial','#23843b');
+ }
+ return h;
+}
+async function renderPage(entries,pageNum,totalPages,config,logo) {
+ const c=document.createElement('canvas');c.width=PAGE_W;c.height=PAGE_H;
+ const ctx=c.getContext('2d',{alpha:false});ctx.fillStyle='#fff';ctx.fillRect(0,0,PAGE_W,PAGE_H);
+ roundRect(ctx,44,39,1102,117,17,'#0d2617');
+ if(logo)fitImage(ctx,logo,65,51,91,91);
+ text(ctx,'NOVA PRIME 3D',181,97,'bold 43px Arial','#ffffff');
+ text(ctx,'CATÁLOGO DE PRODUTOS   •   '+config.date,181,129,'21px Arial','#b9eec1');
+ let y=185;
+ for(const entry of entries){const ht=card(ctx,entry.item,y,entry.images,entry.large);y+=ht+22}
+ ctx.strokeStyle='#d3e3d6';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(61,1585);ctx.lineTo(1128,1585);ctx.stroke();
+ wrapText(ctx,config.contact||'Nova Prime 3D',63,1618,870,27,2,'20px Arial','#31563a');
+ text(ctx,`Página ${pageNum} de ${totalPages}`,1120,1638,'18px Arial','#5c7863','right');
+ return c.toDataURL('image/jpeg',0.92).split(',')[1];
 }
 function base64ToBytes(str) {
   const binary=atob(str),a=new Uint8Array(binary.length);
@@ -110,9 +138,26 @@ function makePDF(images) {
 async function create(payload){
  const items=payload.products||[];
  if(!items.length)throw Error('Selecione produtos para o catálogo.');
- const pages=[];
- for(let i=0;i<items.length;i+=2)pages.push(items.slice(i,i+2));
  const logo=await loadImage('./logo.png');
+ const expanded=[];
+ for(const item of items){
+  const all=await Promise.all((item.photos||[]).slice(0,3).filter(Boolean).map(loadImage));
+  expanded.push({item,images:all.filter(Boolean),large:false});
+ }
+ // Diagramação automática: até dois produtos com fotos ou mais produtos sem fotos,
+ // sempre respeitando a área livre do rodapé do A4.
+ const pages=[],maxY=1550,startY=185,gap=22;
+ let current=[],y=startY;
+ for(const entry of expanded){
+  const h=cardHeight(entry.item,entry.images,false);
+  if(current.length&&y+h>maxY){pages.push(current);current=[];y=startY}
+  current.push(entry);y+=h+gap;
+ }
+ if(current.length)pages.push(current);
+ // Um único produto com foto ocupa mais espaço útil, sem capa vazia.
+ for(const page of pages){
+  if(page.length===1&&page[0].images.length){page[0].large=true}
+ }
  const images=[];
  for(let i=0;i<pages.length;i++)images.push(await renderPage(pages[i],i+1,pages.length,payload,logo));
  return makePDF(images);
