@@ -1,0 +1,15 @@
+NOVA PRIME 3D — iPhone/Web v6.8 (PRÉVIA DE TESTES)
+
+NÃO envie ainda este pacote ao repositório principal de produção.
+
+Teste separado: publicar em repositório próprio no GitHub Pages, por exemplo calculadora-nova-prime-3d-teste, na raiz. Adicionar o domínio novaprime3d-cyber.github.io no Authentication já é suficiente para páginas de teste no mesmo domínio.
+
+Esta versão de testes usa um armazenamento local separado da versão publicada, para não alterar os valores fixos e as fotos locais do aplicativo atual no mesmo domínio. Ao publicar a versão definitiva, precisaremos preparar a migração desses dados.
+
+Esta versão foi adaptada da v6.8 do Android. Integra o mesmo Firebase Auth/Firestore e as regras existentes. Fotos permanecem locais no navegador: não são compartilhadas e podem ser apagadas pelo Safari ao limpar dados do site.
+
+O PDF de catálogo é gerado no navegador, sem abrir a tela de impressão do iOS. A prévia aparece dentro do aplicativo. No Safari, o botão Compartilhar tenta abrir a folha de compartilhamento; se não for compatível, baixa o PDF.
+
+Não atualize o link da família antes de validar login, projetos, valores fixos, foto, modo cliente, atacado, PDF e permissões. Não desinstale o app anterior.
+
+Uso de teste: extraia e hospede o conteúdo da pasta na raiz de um repositório separado.
