@@ -1,0 +1,13 @@
+NOVA PRIME 3D — iPhone v6.12 (teste separado)
+
+Atualização: fotos comerciais de projetos compartilhados podem ser enviadas para o Firebase Storage ao salvar o produto. Android e iPhone compartilham as referências via Firestore. Os bytes locais permanecem no armazenamento privado do dispositivo.
+
+IMPORTANTE: o GitHub de testes usa os MESMOS dados compartilhados do Firebase real. Faça os testes somente com um projeto de teste. Nunca substitua o site oficial antes de validar.
+
+Para foto antiga do Android: abra o projeto compartilhado > Catálogo > Salvar produto para enviar imagens existentes para a nuvem. Depois abra o mesmo projeto no iPhone e confira Ver fotos, Modo Cliente e PDF.
+
+Imagens até 5 MB; máximo 3. Custo do Storage depende de consumo, região e franquia; orçamento de R$25 é apenas alerta, não limite.
+
+Observação de segurança: o Firebase SDK obtém URLs com tokens de download; não divulgue essas URLs fora do grupo, pois quem as possui pode acessar os arquivos. As regras de Storage limitam o acesso à obtenção das URLs aos usuários autorizados. Para acesso estritamente autenticado a cada download, é necessário adaptar o download para operações autenticadas, inclusive CORS.
+
+Limitações: exclusões de fotos no app atualizam os metadados compartilhados; arquivos antigos podem permanecer no Storage até uma limpeza administrativa. O teste não inclui compilação de APK nem validação em Safari real.
