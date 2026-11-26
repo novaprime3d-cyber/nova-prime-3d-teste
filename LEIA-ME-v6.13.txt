@@ -1,0 +1,15 @@
+NOVA PRIME 3D — iPhone v6.13 — CORREÇÃO DA NAVEGAÇÃO NO SAFARI
+
+Base: v6.12 FOTOS_NUVEM_TESTE, preservada integralmente.
+Ajustes:
+- Respeita a área segura superior do iPhone (notch/ilha dinâmica e barra de status).
+- Mantém o cabeçalho fixado abaixo da área segura ao rolar.
+- Aumenta a área de toque da seta de voltar para 44 x 44 px.
+- Atualiza o nome do cache do Service Worker para ativar a nova interface.
+
+Não foram alteradas as configurações, regras, credenciais ou chamadas do Firebase.
+
+Publicação: extraia o conteúdo do ZIP na RAIZ do repositório web de testes
+nova-prime-3d-teste, substituindo os arquivos existentes.
+Não publique no site oficial antes de validar no Safari.
+Após publicar, feche e reabra o site no Safari e teste a seta de voltar.
